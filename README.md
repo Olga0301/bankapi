@@ -8,7 +8,7 @@ INSTALLING PACKAGES
 pip install -r requrements.txt
 
 INITIALIZE ALEMBIC
-alimbic init alimbic
+alembic init alembic
 
 alembic revision --autogenerate
 
