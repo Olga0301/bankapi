@@ -1,9 +1,10 @@
 from inspect import iscoroutinefunction
 from typing import Any, Type, Sequence
 
-from sqlalchemy import Column, INT, create_engine, select, Row, RowMapping
+from sqlalchemy import Column, INT, VARCHAR, DECIMAL, ForeignKey, BOOLEAN, \
+    create_engine, select, Row, RowMapping
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker, Session
 
 
 class Base(DeclarativeBase):
@@ -12,7 +13,7 @@ class Base(DeclarativeBase):
     engine = create_engine('postgresql://admin:admin@localhost:5432/bank')
     session = sessionmaker(bind=engine)
 
-    async_engine = create_async_engine('postgresql+asyncpg://admin:admin@localhost:/bank')
+    async_engine = create_async_engine('postgresql+asyncpg://admin:admin@localhost:5432/bank')
     async_session = async_sessionmaker(bind=async_engine)
 
     @staticmethod
