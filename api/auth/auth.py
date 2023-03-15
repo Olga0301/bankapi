@@ -1,9 +1,15 @@
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, HTTPException, status
 from pydantic import ValidationError
 # from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+from jose import jwt, JWTError
 from core.models import User
-from core.schemas import UserInfo, RegisterForm, LoginForm
+from core.schemas import UserInfo, RegisterForm, LoginForm, TokenSchema
+from core.settings import SECRET_KEY, EXPIRE_JWT_TOKEN, ALGORITHM, TOKEN_TYPE
+
+
 router = APIRouter()
 
 
@@ -26,8 +32,7 @@ async def register_user(register_form: RegisterForm):
 
 @router.post(
     '/login',
-    response_model=UserInfo,
-    response_model_exclude={'password', 'hashed_password', 'pk'}
+    response_model=TokenSchema,
 )
 async def login(login_form: LoginForm):
     user = await User.select(User.email == login_form.email)
@@ -42,5 +47,10 @@ async def login(login_form: LoginForm):
         except ValidationError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='не верный пароль')
         else:
-            return user_info
+            data = {
+                'sub': user_info.username,
+                'exp': datetime.utcnow() + timedelta(minutes=EXPIRE_JWT_TOKEN)
+            }
+            token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+            return TokenSchema(access_token=token, token_type=TOKEN_TYPE)
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='пользователь не найден')
