@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import Column, VARCHAR, TEXT, TIMESTAMP, INT, ForeignKey
 from sqlalchemy.sql.functions import now
 from .base import Base
@@ -15,7 +16,7 @@ class User(Base):
 class Post(Base):
     title = Column(VARCHAR(128), nullable=False, unique=True)
     body = Column(TEXT, nullable=False)
-    date_create = Column(TIMESTAMP, default=now)
+    date_create = Column(TIMESTAMP, default=datetime.now())
     author_id = Column(INT, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
 
     def __repr__(self):
